@@ -7,19 +7,19 @@ def solve(input_data: str) -> int:
         ranges.append((int(rs[0]), int(rs[1])))
 
 
-    c = 0
+    sols: set[int] = set()
 
     for start, end in ranges:
         for v in range(start, end + 1):
             s = str(v)
-            if len(s) % 2 != 0:
-                continue
 
             midpoint = len(s) // 2
-            first_half = s[:midpoint]
+            for end in range(1, midpoint + 1):
+                times = (len(s) / end)
+                if not times.is_integer():
+                    continue
 
-            if first_half * 2 == s:
-                c += v
+                if s[:end] * int(times) == s:
+                    sols.add(v)
 
-
-    return c
+    return sum(list(sols))
