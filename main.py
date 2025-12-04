@@ -57,15 +57,12 @@ def run_aoc_day():
         sys.exit(1)
         
     
-    try:
-        result = solve_function(input_content)
-        print("\n" + "="*40)
-        print(f"         ✨ RESULT (Day {day_number}) ✨")
-        print("="*40)
-        print(f"{result}")
-        print("="*40)
-    except Exception as e:
-        print(f"\nAn error occurred during execution of the solution for Day {day_number}: {e}")
+    result = solve_function(input_content)
+    print("\n" + "="*40)
+    print(f"         ✨ RESULT (Day {day_number}) ✨")
+    print("="*40)
+    print(f"{result}")
+    print("="*40)
 
 if __name__ == "__main__":
     run_aoc_day()
