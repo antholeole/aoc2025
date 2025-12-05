@@ -1,28 +1,27 @@
 def solve(input: str) -> int:
-    ingredients: list[int] = []
     ranges: list[tuple[int, int]] = []
-    blank = False
     for line in input.splitlines():
         if line == "":
-            blank = True
-            continue
+            break
 
-        if blank:
-            ingredients.append(int(line))
+        parts = line.split("-")
+        ranges.append((int(parts[0]), int(parts[1])))
+
+    ranges.sort(key = lambda r: r[0])
+    ranges_overlapped: list[tuple[int, int]] = []
+    currstart = ranges[0][0]
+    currend = ranges[0][1]
+    for start, end in ranges[1:]:
+        if start <= currend:
+            currend = max(currend, end)
         else:
-            parts = line.split("-")
-            ranges.append((int(parts[0]), int(parts[1])))
+            ranges_overlapped.append((currstart, currend))
+            currstart = start
+            currend = end
+    ranges_overlapped.append((currstart, currend))
 
     fresh = 0
-    for ingredient in ingredients:
-        is_fresh = False
-        for start, end in ranges:
-            if start <= ingredient <= end:
-                is_fresh = True
-                break
-        if is_fresh:
-            fresh += 1
-
-        
+    for start, end in ranges_overlapped:
+        fresh += end - start + 1
     
     return fresh
