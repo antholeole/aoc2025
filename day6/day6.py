@@ -2,17 +2,46 @@ def solve(input: str) -> int:
     problems: list[list[int]] = []
     symbols: list[str] = []
 
-    num_problems = len(input.splitlines()[0].split())
-    for _ in range(num_problems):
-        problems.append([])
+    lines = input.splitlines()
 
-    for line in input.splitlines():
-        line_clean = " ".join(line.split())
-        for idx, val in enumerate(line_clean.split(" ")):
-            if val == "*" or val == "+":
-                symbols.append(val)
-            else:
-                problems[idx].append(int(val))
+    lines_with_digits = lines[:-1]
+    line_with_symbols = lines[-1]
+
+    idx_of_splits: list[int] = []
+    for idx, char in enumerate(line_with_symbols):
+        if char != " ":
+            idx_of_splits.append(idx - 1)
+        if char == "*" or char == "+":
+            symbols.append(char)
+            
+
+    for c in range(len(lines_with_digits[0])):
+        problem_idx = (
+            next(
+                (idx for idx, i in enumerate(idx_of_splits) if i > c),
+                len(idx_of_splits),
+            )
+            - 1
+        )
+
+        # skip all blank lines
+        if c in idx_of_splits:
+            continue
+
+        if problem_idx >= len(problems):
+            problems.append([])
+
+        for r in range(len(lines_with_digits)):
+            if r == 0:
+                problems[problem_idx].append(0)
+            
+            if lines_with_digits[r][c] == " ":
+                continue
+
+            digit = int(lines_with_digits[r][c])
+
+            problems[problem_idx][-1] *= 10
+            problems[problem_idx][-1] += digit
 
     total = 0
     for idx, problem in enumerate(problems):
