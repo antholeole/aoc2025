@@ -7,11 +7,25 @@ from math import sqrt
 class UnionFind:
     def __init__(self, total: int):
         self._map: dict[int, int] = {x: x for x in range(total)}
+        self._sizes: dict[int, int] ={x: 1 for x in range(total)}
 
     def union(self, a: int, b: int):
         a_parent = self.find(a)
         b_parent = self.find(b)
-        self._map[a_parent] = b_parent
+
+        if a_parent == b_parent:
+            return
+
+        # join with bigger parent, update size
+        if self._sizes[a_parent] < self._sizes[b_parent]:
+            self._map[a_parent] = b_parent
+            self._sizes[b_parent] += self._sizes[a_parent]
+        else:
+            self._map[b_parent] = a_parent
+            self._sizes[a_parent] += self._sizes[b_parent]
+
+    def size_of(self, a: int) -> int:
+        return self._sizes[self.find(a)]
 
     def find(self, a: int) -> int:
         found = self._map[a]
@@ -35,10 +49,6 @@ def dist(a: tuple[int, int, int], b: tuple[int, int, int]) -> float:
         s += (x - r) ** 2
     return sqrt(s)
 
-
-N_SHORTEST = 1000
-
-
 def solve(input: str) -> int:
     vals: list[tuple[int, int, int]] = []
 
@@ -55,11 +65,13 @@ def solve(input: str) -> int:
             heappush(min_sizes, v)
 
     dsu = UnionFind(len(vals))
-    for _ in range(N_SHORTEST):
+    while len(min_sizes):
         _, pair = heappop(min_sizes)
         dsu.union(pair[0], pair[1])
+        if dsu.size_of(pair[0]) >= len(vals):
+            return vals[pair[0]][0] * vals[pair[1]][0]
+
+    assert False, "should have connected everything at some point"
 
 
-    sizes = list(reversed(sorted(dsu.sizes())))
 
-    return sizes[0] * sizes[1] * sizes[2]
